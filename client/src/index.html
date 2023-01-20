@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Epic Hacker Console</title>
+
+    <link rel="stylesheet" href="../dist/output.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  </head>
+  <body class="bg-gray-800 select-none">
+    <div class="bg-[rgb(30,30,30)] h-[10vh] xl:h-[5vh] flex items-center shadow-lg px-5">
+      <h1 class="font-medium text-white">The Hacker Console</h1>
+    </div>
+    <h1 class="text-3xl text-white p-3 font-bold">Connected Devices</h1>
+    <div class="flex justify-center w-screen">
+
+        <div class="mdc-data-table w-[90vw] bg-[rgb(50,50,50)!important]">
+          <div class="mdc-data-table__table-container">
+            <table class="mdc-data-table__table" aria-label="Dessert calories">
+              <thead>
+                <tr class="mdc-data-table__header-row">
+                  <th class="mdc-data-table__header-cell bg-[rgb(60,60,60)!important] text-[white!important]" role="columnheader" scope="col">Computer Name</th>
+                  <th class="mdc-data-table__header-cell bg-[rgb(60,60,60)!important] text-[white!important] mdc-data-table__header-cell" role="columnheader" scope="col">IP Address</th>
+                  <th class="mdc-data-table__header-cell bg-[rgb(60,60,60)!important] text-[white!important] mdc-data-table__header-cell" role="columnheader" scope="col">Operating System</th>
+                  <th class="mdc-data-table__header-cell bg-[rgb(60,60,60)!important] text-[white!important]" role="columnheader" scope="col">Status</th>
+                </tr>
+              </thead>
+              <tbody class="mdc-data-table__content">
+                <tr class="mdc-data-table__row cursor-pointer">
+                  <th class="mdc-data-table__cell text-[white!important]" scope="row">LAPTOP-AJFN23K</th>
+                  <td class="mdc-data-table__cell text-[white!important] mdc-data-table__cell">192.168.1.221</td>
+                  <td class="mdc-data-table__cell text-[white!important] mdc-data-table__cell">Windows 10 Pro</td>
+                  <td class="mdc-data-table__cell text-[white!important]">
+                    <span class="font-medium px-2 py-1 bg-green-700 rounded-xl">
+                      Online
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+    </div>
+  </body>
+</html>
