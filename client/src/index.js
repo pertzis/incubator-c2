@@ -1,26 +1,64 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
-
+const client = require('./incubatorClient')
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
+ipcMain.on("connect-server", event => {
+  client.connect()
+  ipcMain.on("send-message", (event, message) => {
+    client.send(message)
+    event.sender.send("send-message", message)
+  })
+
+  ipcMain.on("open-control-screen", () => {
+    const controlWindow = new BrowserWindow({
+      width: 1000,
+      height: 800,
+      webPreferences: {
+        nodeIntegration: true,
+        contextIsolation: false
+      },
+    });
+    controlWindow.loadFile(path.join(__dirname, 'views', 'controlScreen', 'controlScreen.html'))
+  })
+
+  ipcMain.on("set-server", (event, serverObject) => {
+    client.serverInfo = serverObject
+  })
+  ipcMain.on("get-server", event => {
+    event.sender.send("get-server", client.serverInfo)
+  })
+
+  client.socket.on("data", data => {
+    let message = client.decode(data)
+    event.sender.send("receive-message", message)
+  })
+})
+
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true,
+      contextIsolation: false
     },
   });
 
+  const createControlWindow = () => {
+    
+  }
+
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, 'index.html'));
+  mainWindow.loadFile(path.join(__dirname, 'views', 'mainScreen', 'mainScreen.html'));
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 };
 
 // This method will be called when Electron has finished
