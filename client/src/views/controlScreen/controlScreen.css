@@ -1,0 +1,18 @@
+.inactive {
+    cursor: pointer;
+    fill: black;
+}
+
+.inactive:hover {
+    background-color: rgb(226 232 240);
+}
+
+.active {
+    background-color: rgb(243 232 255);
+    color: rgb(107 33 168);
+    fill: rgb(107 33 168);
+}
+
+.active:hover {
+    background-color: rgb(233 213 255);
+}
