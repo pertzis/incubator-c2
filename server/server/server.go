@@ -4,9 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
+	"runtime"
 	"strconv"
 	"strings"
+
+	"golang.org/x/sys/windows/registry"
 )
+
+var DELIM string = "<|!|>"
 
 func Listen() {
 	server, err := net.Listen("tcp", "0.0.0.0:8081")
@@ -20,29 +26,65 @@ func Listen() {
 		if err != nil {
 			fmt.Println("Could not accept client:", err)
 		}
-		conn.Write([]byte("Hello, world!\r\n"))
-		for {
-			receive(conn)
-		}
+		go handleClient(conn)
 	}
 
 }
 
-func receive(conn net.Conn) string {
+func handleClient(conn net.Conn) {
+	fmt.Printf("[%s] Connected\r\n", conn.RemoteAddr())
+	for {
+		message, err := receive(conn)
+		if err != nil {
+			fmt.Println("Failed to receive!")
+			return
+		}
+		split_message := strings.Split(message, DELIM)
+		command := split_message[0]
+
+		fmt.Printf("[%s] [RECEIVED] %s\r\n", conn.RemoteAddr(), command)
+
+		switch command {
+		case "get_pc_info":
+			var os_version string
+			hostname, _ := os.Hostname()
+			ipAddress := strings.Split(conn.LocalAddr().String(), ":")[0]
+			k, reg_err := registry.OpenKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows NT\CurrentVersion`, registry.QUERY_VALUE)
+			if reg_err != nil {
+				os_version = runtime.GOOS
+			} else {
+				os_version, _, reg_err = k.GetStringValue("ProductName")
+				if reg_err != nil {
+					os_version = "Unknown"
+				}
+			}
+
+			parameters := []string{command, hostname, ipAddress, os_version}
+
+			send(strings.Join(parameters, DELIM), conn)
+		}
+	}
+}
+
+func receive(conn net.Conn) (string, error) {
 
 	messageSize := make([]byte, 10)
 
 	conn.Read(messageSize)
-	fmt.Println("Message Size:", string(messageSize))
 	intMessageSize, err := strconv.Atoi(strings.TrimRight(string(messageSize), " "))
 	if err != nil {
-		fmt.Println("Error: could not decode message header.")
-		return ""
+		return "", err
 	}
 
 	message := make([]byte, intMessageSize)
 	conn.Read(message)
 
-	return string(message)
+	return string(message), nil
 
+}
+
+func send(message string, conn net.Conn) error {
+	finalMessage := []byte(fmt.Sprintf("%-10d%s", len(message), message))
+	_, err := conn.Write(finalMessage)
+	return err
 }
