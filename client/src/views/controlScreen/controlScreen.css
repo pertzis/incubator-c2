@@ -16,3 +16,11 @@
 .active:hover {
     background-color: rgb(233 213 255);
 }
+
+.icon-active {
+    background-color: rgb(203 213 225);
+}
+
+.icon-inactive:hover {
+    background-color: rgb(226 232 240);
+}

@@ -28,6 +28,9 @@ const handleSelection = (screen) => {
 
 }
 
+
+
+
 ipcRenderer.send("get-server")
 
 ipcRenderer.on("get-server", (_, server) => {
