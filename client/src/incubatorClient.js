@@ -25,6 +25,6 @@ exports.decode = data => {
 
 exports.send = (message) => {
     const formattedMessage = message.join(DELIM)
-    console.log("[Incubator Client -> Sent] " + formattedMessage, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
+    console.log("[Incubator Client -> Sent] " + message)
     exports.socket.write((new TextEncoder().encode(formattedMessage)).length.toString().padEnd(10) + formattedMessage)
 }

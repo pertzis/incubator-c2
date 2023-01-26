@@ -1,7 +1,7 @@
 const { ipcRenderer } = require('electron')
 const { MDCTextField } = require('@material/textfield');
 
-const textField = new MDCTextField(document.querySelector('.mdc-text-field'));
+new MDCTextField(document.querySelector('.mdc-text-field'));
 
 const titleCell = document.getElementById("title")
 
@@ -39,9 +39,5 @@ ipcRenderer.on("get-server", (_, server) => {
 })
 
 ipcRenderer.on("receive-message", (_, message) => {
-    console.log("%c[INCUBATOR CLIENT] %c[RECEIVED] %c" + message, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
-})
-
-ipcRenderer.on("send-message", (_, message) => {
-    console.log("%c[INCUBATOR CLIENT] %c[SENT] %c" + message, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
+    console.log(message)
 })
