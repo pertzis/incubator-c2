@@ -23,6 +23,8 @@ exports.decode = data => {
 }
 
 exports.send = (message) => {
-    console.log("%c[INCUBATOR CLIENT] %c[SENT] %c" + message, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
-    exports.socket.write(message.length.toString().padEnd(10) + message)
+
+    const formattedMessage = message.join(DELIM)
+    console.log("%c[INCUBATOR CLIENT] %c[SENT] %c" + formattedMessage, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
+    exports.socket.write((new TextEncoder().encode(formattedMessage)).length.toString().padEnd(10) + formattedMessage)
 }
