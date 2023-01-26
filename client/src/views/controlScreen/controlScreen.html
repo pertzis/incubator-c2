@@ -14,10 +14,15 @@
 
     <title>Epic Hacker Console</title>
 </head>
+
+
 <body class="select-none">
+    <!-- Header  -->
     <div class="h-[10vh] xl:h-[5vh] flex items-center border-b border-b-slate-300 px-5">
         <h1 class="font-bold font-mono text-pink-500">theHackerConsole.</h1>
     </div>
+
+    <!-- Sidebar -->
     <div class="w-screen h-[90vh] xl:h-[95vh] grid grid-cols-4">
         <div class="col-span-1 flex flex-col border-r bg-white border-r-slate-300 min-w-max z-30">
             <div class="flex flex-col items-center justify-center border-b border-b-slate-300 py-5">
@@ -38,12 +43,17 @@
                     <span>Run Process</span>
                 </div>
             </div>
-        </div>
-        <div class="m-5 col-span-3 min-w-max">
+    </div>
+
+    <div class="m-5 col-span-3 min-w-max">
+        
+            <!-- Soundboard -->
 
             <div style="display: none;" id="soundboard-component">
                 <h1 class="text-3xl font-medium">Soundboard</h1>
             </div>
+
+            <!-- Run Process -->
 
             <div style="display: none;" id="process-component">
                 <script defer src="process.js"></script>
@@ -56,7 +66,16 @@
                 </label>
                 <span style="display: none" id="error-process" class="text-red-500">Don't leave the process name blank!</span>
                 <button onclick="sendProcess()" class="w-full mt-3 transition-colors shadow-lg p-3 text-xl font-medium bg-purple-600 text-white outline-none rounded-lg hover:bg-purple-800">Run!</button>
+                <div id="error-response-process" class="mt-5 bg-red-500 p-4 text-white font-bold shadow-lg rounded-md">
+                    <span id="error-response-process-command" class="font-mono text-sm">process.exe</span>
+                    <div style="display: none" class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#ffffff"><path d="M11 15h2v2h-2v-2zm0-8h2v6h-2V7zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+                        <span id="error-response-process-text">The requested process requires elevation!</span> 
+                    </div>
+                </div>
             </div>
+
+            <!-- Message Box -->
 
             <div style="display: none;" id="messageBox-component">
                 <script defer src="messageBox.js"></script>
