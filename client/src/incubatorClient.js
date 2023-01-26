@@ -12,17 +12,18 @@ exports.serverInfo = {
 
 exports.connect = () => {
     exports.socket.connect(8081, "localhost", () => {
-        console.log("%c[INCUBATOR CLIENT] %cConnected!", "color: lightgreen; font-weight: bold", "color: white")
+        console.log("[Incubator Client] Connected to server!")
     })
 }
 
 exports.decode = data => {
     let message = data.toString().substring(10)
     message = message.split(DELIM)
+    console.log("[Incubator Client <- Received] " + message)
     return message
 }
 
 exports.send = (message) => {
-    console.log("%c[INCUBATOR CLIENT] %c[SENT] %c" + message, "color: lightgreen; font-weight: bold", "color: lightblue; font-weight: bold", "color: white;")
+    console.log("[Incubator Client -> Sent] " + message)
     exports.socket.write(message.length.toString().padEnd(10) + message)
 }
