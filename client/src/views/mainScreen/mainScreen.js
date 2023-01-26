@@ -6,7 +6,7 @@ const ipAddressCell = document.getElementById("ipAddress")
 const osVersionCell = document.getElementById("osVersion")
 
 ipcRenderer.send("connect-server")
-ipcRenderer.send("send-message", "get_pc_info")
+ipcRenderer.send("send-message", ["get_pc_info"])
 
 ipcRenderer.on("receive-message", (event, message) =>{
     let command = message[0]
