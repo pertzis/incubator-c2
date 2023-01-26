@@ -25,8 +25,9 @@ func Listen() {
 		conn, err := server.Accept()
 		if err != nil {
 			fmt.Println("Could not accept client:", err)
+		} else {
+			go handleClient(conn)	
 		}
-		go handleClient(conn)
 	}
 
 }
