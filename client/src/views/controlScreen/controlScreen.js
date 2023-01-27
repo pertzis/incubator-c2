@@ -37,7 +37,3 @@ ipcRenderer.on("get-server", (_, server) => {
     titleCell.textContent = server.hostname
     document.title = `Epic Hacker Console [${server.hostname}]`
 })
-
-ipcRenderer.on("receive-message", (_, message) => {
-    console.log(message)
-})
