@@ -2,6 +2,9 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const client = require('./incubatorClient')
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
+
+let windows = []
+
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
@@ -23,6 +26,7 @@ ipcMain.on("connect-server", event => {
       },
     });
     controlWindow.loadFile(path.join(__dirname, 'views', 'controlScreen', 'controlScreen.html'))
+    windows.push(controlWindow)
   })
 
   ipcMain.on("set-server", (event, serverObject) => {
@@ -34,7 +38,9 @@ ipcMain.on("connect-server", event => {
 
   client.socket.on("data", data => {
     let message = client.decode(data)
-    event.sender.send("receive-message", message)
+    for (let win of windows) {
+      win.webContents.send("receive-message", message)
+    }
   })
 })
 
@@ -50,15 +56,14 @@ const createWindow = () => {
     },
   });
 
-  const createControlWindow = () => {
-    
-  }
+  windows.push(mainWindow)
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'views', 'mainScreen', 'mainScreen.html'));
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
+
 };
 
 // This method will be called when Electron has finished
