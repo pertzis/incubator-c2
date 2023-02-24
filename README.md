@@ -1,2 +1,2 @@
 # incubator-c2
-C2 Demonstration for Incubator Presentation
+Command-and-Control Demonstration for 2023 Incubator Innovation Summit
