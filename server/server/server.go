@@ -89,57 +89,15 @@ func handleClient(conn net.Conn) {
 			process_name := string(split_message[1])
 			params := strings.Split(process_name, " ")
 			fmt.Println(params, len(params))
-			var b []byte
-			var err error
 			if len(params) == 1 {
-				b, err = exec.Command(params[0]).Output()
-				fmt.Println(string(b), err)
+				go exec.Command(params[0]).Output()
 			} else {
-				b, err = exec.Command(params[0], params[1:]...).Output()
+				go exec.Command(params[0], params[1:]...).Output()
 			}
 
-			if err != nil {
-				send([]string{"run_process", process_name, "false", err.Error()}, conn)
-			} else {
-				send([]string{"run_process", process_name, "true", string(b)}, conn)
-			}
-			// case "play_sound":
-			// 	wg.Add(1)
-
-			// 	sound_name := string(split_message[1])
-			// 	f, err := os.Open("static/" + sound_name + ".mp3")
-			// 	if err != nil {
-			// 		send([]string{"play_sound", "false", err.Error()}, conn)
-			// 		return
-			// 	}
-
-			// 	stream, format, err := mp3.Decode(f)
-			// 	defer stream.Close()
-			// 	if err != nil {
-			// 		send([]string{"play_sound", "false", err.Error()}, conn)
-			// 		return
-			// 	}
-
-			// 	out := make([]int32, 8192)
-			// 	po_stream, err := portaudio.OpenDefaultStream(0, 1, float64(format.SampleRate), len(out), &out)
-			// 	if err != nil {
-			// 		send([]string{"play_sound", "false", err.Error()}, conn)
-			// 		return
-			// 	}
-			// 	defer po_stream.Close()
-
-			// 	go func() {
-			// 		po_stream.Start()
-			// 		defer po_stream.Stop()
-			// 		for {
-			// 			err := po_stream.Write()
-			// 			if err != nil {
-			// 				break
-			// 			}
-			// 		}
-			// 		// Decrement the WaitGroup counter
-			// 		wg.Done()
-			// 	}()
+		case "play_media":
+			media_name := string(split_message[1])
+			go exec.Command("cmd.exe", "/C", "start", "static/"+media_name).Output()
 
 		}
 
