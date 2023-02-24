@@ -62,7 +62,7 @@ const createWindow = () => {
   mainWindow.loadFile(path.join(__dirname, 'views', 'mainScreen', 'mainScreen.html'));
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 
 };
 
